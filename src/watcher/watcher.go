@@ -1,7 +1,6 @@
 package watcher
 
 import (
-	"fmt"
 	"log"
 	"net"
 )
@@ -39,8 +38,4 @@ func (w *Watcher) Connect() (net.Conn, error) {
 	log.Printf("Connected to %s (%s)", w.Server, w.Conn.RemoteAddr())
 	//Return the connection and no error.
 	return w.Conn, nil
-}
-
-func Print() {
-	fmt.Println("Hello from watcher!")
 }

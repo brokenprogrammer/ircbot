@@ -2,20 +2,20 @@ package main
 
 import (
 	"bufio"
+	"controlpanel"
+	//"db"
 	"fmt"
-	"net"
+	_ "net"
 	"strings"
 	"watcher"
 )
 
 func main() {
-	fmt.Println("Hello World!")
-
 	bot := watcher.NewBot()
 	conn, _ := bot.Connect()
 	defer conn.Close()
 
-	fmt.Println(bot)
+	//db.InitDB()
 
 	//Write to the IRC server
 	conn.Write([]byte("NICK " + bot.Nick + "\r\n"))                         //IRC server requests a nickname for the user
@@ -24,44 +24,27 @@ func main() {
 	conn.Write([]byte("PRIVMSG " + bot.Channel + " :Hello World!\r\n"))
 
 	//Using a Go Routine to handle a Control Panel for the bot simultaniously as the bot is running
-	go ControlPanel(conn, bot)
+	go controlpanel.ControlPanel(conn, bot)
 
 	//The bufio reader will read data we get from our connection and return it as a string.
 	connBuff := bufio.NewReader(conn)
 
+	//The infinite loop that reads the chat untill the connection is lost (Or we Quit).
 	for {
 		str, err := connBuff.ReadString('\n')
+
 		if len(str) > 0 { //If there is a message from the server
 			fmt.Println(str) //Print it out
 
 			//Staying connected to the IRC server
 			splitted := strings.Split(str, " ") //Split the string into a slice
 			if splitted[0] == "PING" {          //If the IRC Server is pinging us
-				fmt.Println(splitted)
 				conn.Write([]byte("PONG " + splitted[1] + "\r\n"))                            //Respond back with a PONG
 				conn.Write([]byte("PRIVMSG " + bot.Channel + " :Hello I'm Still here! \r\n")) //Tell the chat you're still here
 			}
 		}
 		if err != nil {
-			break
-		}
-	}
-}
-
-//Experimenting with a ControlPanel for the bot.
-func ControlPanel(conn net.Conn, bot *watcher.Watcher) {
-	for {
-		fmt.Println("Waiting for input: ")
-
-		var input string
-
-		fmt.Scan(&input)
-
-		switch input {
-		case "Hello":
-			conn.Write([]byte("PRIVMSG " + bot.Channel + " :Hello I'm At The ControllPanel! \r\n"))
-		case "Quit":
-			conn.Write([]byte("QUIT " + "\r\n"))
+			break //Break out of the loop if there is an error
 		}
 	}
 }
