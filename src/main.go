@@ -33,6 +33,9 @@ func main() {
 	//Using a Go Routine to handle a Control Panel for the bot simultaniously as the bot is running
 	go controlpanel.ControlPanel(conn, bot, c)
 
+	//Using another Go Routine to handle a Control Panel that listens to input from the terminal
+	go controlpanel.ControlPanelConsole(conn, bot)
+
 	//The bufio reader will read data we get from our connection and return it as a string.
 	connBuff := bufio.NewReader(conn)
 
@@ -52,7 +55,7 @@ func main() {
 
 			//Sending the string through channel to our controlpanel
 			if splitted[1] == "PRIVMSG" {
-				//c <- str
+				c <- str
 			}
 		}
 		if err != nil {
