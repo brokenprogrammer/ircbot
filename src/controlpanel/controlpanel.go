@@ -27,9 +27,11 @@ func ControlPanel(conn net.Conn, bot *watcher.Watcher, c chan string) {
 //readMessage reads messages user sent to the chat
 //If it recognize a command it calls a function depending on command.
 func readMessage(msg string, bot *watcher.Watcher, conn net.Conn) {
+	//Splits the string into a slice so we can use multiple parts of the message
+	splitted := strings.Split(msg, " ")
 
 	//Switch through the incoming message
-	switch strings.TrimSpace(msg) {
+	switch strings.TrimSpace(splitted[3]) {
 	//Incase user wrote !help, Display the help message
 	case ":!help":
 		//Calling function displaying help message

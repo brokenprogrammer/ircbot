@@ -55,7 +55,8 @@ func main() {
 
 			//Sending the string through channel to our controlpanel
 			if splitted[1] == "PRIVMSG" {
-				c <- splitted[3]
+				//c <- splitted[3]
+				c <- str
 			}
 		}
 		if err != nil {
