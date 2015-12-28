@@ -25,6 +25,10 @@ func InitDB() {
 
 	//Migrate tables up to the database
 	migrationsUp(db)
+
+	//Removing the tables from the database(Migrating down)
+	//migrationsDown(db)
+
 	/*
 		//Prepare statement
 		stmt, err := db.Prepare("INSERT INTO tbl1(one, two) values(?,?)")
@@ -102,7 +106,45 @@ func migrationsUp(db *sql.DB) {
 
 //Function that runs the migrations removing tables from the database
 func migrationsDown(db *sql.DB) {
+	//How to drop tables
+	sqlStmt := `DROP TABLE foo;`
+	_, err := db.Exec(sqlStmt) //executing above statement
 
+	//error logging
+	if err != nil {
+		log.Printf("%q: %s\n", err, sqlStmt)
+		//return
+	}
+
+	//Dropping the users table
+	sqlDropUsers := `DROP TABLE users;`
+	_, usrErr := db.Exec(sqlDropUsers)
+
+	//If errors occurr when dropping the users table
+	if usrErr != nil {
+		log.Printf("%q: %s\n", usrErr, sqlDropUsers)
+	}
+
+	//Dropping the blocked table
+	sqlDropBlocked := `DROP TABLE blocked;`
+	_, blcErr := db.Exec(sqlDropBlocked)
+
+	//If errors occurr when dropping the blocked table
+	if blcErr != nil {
+		log.Printf("%q: %s\n", blcErr, sqlDropBlocked)
+	}
+
+	//Dropping the messages table
+	sqlDropMessages := `DROP TABLE messages;`
+	_, msgErr := db.Exec(sqlDropMessages)
+
+	//If errors occurr when dropping the messages table
+	if msgErr != nil {
+		log.Printf("%q: %s\n", msgErr, sqlDropMessages)
+	}
+
+	//Finished with dropping database tables
+	log.Print("Databases Dropped Successfully. \n")
 }
 
 //Function to add some "Dummy" data to the database

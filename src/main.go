@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+	//Initialize the database, migrating tables.
+	db.InitDB()
 
 	//Channel to send Chat input to the different Go Routines
 	c := make(chan string)
@@ -23,8 +25,6 @@ func main() {
 
 	//defer statement to close the connection when this function ends
 	defer conn.Close()
-
-	db.InitDB()
 
 	//Write to the IRC server
 	conn.Write([]byte("NICK " + bot.Nick + "\r\n"))                         //IRC server requests a nickname for the user
