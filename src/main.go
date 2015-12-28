@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"controlpanel"
-	//"db"
+	"db"
 	"fmt"
 	_ "net"
 	"strings"
@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+
+	//Channel to send Chat input to the different Go Routines
 	c := make(chan string)
 
 	//Our Bot Instance
@@ -22,7 +24,7 @@ func main() {
 	//defer statement to close the connection when this function ends
 	defer conn.Close()
 
-	//db.InitDB()
+	db.InitDB()
 
 	//Write to the IRC server
 	conn.Write([]byte("NICK " + bot.Nick + "\r\n"))                         //IRC server requests a nickname for the user
