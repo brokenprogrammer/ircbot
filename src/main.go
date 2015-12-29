@@ -21,6 +21,8 @@ func main() {
 	DBConn.Delete("users", 4)
 	DBConn.Select("users")
 
+	db.CheckUser("BadBob", DBConn)
+
 	//Channel to send Chat input to the different Go Routines
 	c := make(chan string)
 
@@ -64,7 +66,21 @@ func main() {
 
 			//Sending the string through channel to our controlpanel
 			if splitted[1] == "PRIVMSG" {
-				//c <- splitted[3]
+				//Get the first part of the string which contains the username
+				firstPart := splitted[0]
+
+				//Declare variable to hold the username
+				var username string
+				//All usernames is between : and ! so get the index of the ! mark
+				usernameEnd := strings.Index(firstPart, "!")
+
+				//Get the username by getting the string between the colon and ! mark
+				username = firstPart[1:usernameEnd]
+
+				//Check if the user is stored in our Database
+				db.CheckUser(username, DBConn)
+
+				//Send the whole string to the channel
 				c <- str
 			}
 		}
