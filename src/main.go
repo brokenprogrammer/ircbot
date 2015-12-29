@@ -17,6 +17,9 @@ func main() {
 	//Create a new DBConnection.
 	DBConn := db.NewCrud("sqlite3", "./db/ircbot.db")
 	DBConn.Insert(db.GetUsersTable(), "Larry")
+	DBConn.Update("users", "name", "NewLarry", 4)
+	DBConn.Delete("users", 4)
+	DBConn.Select("users")
 
 	//Channel to send Chat input to the different Go Routines
 	c := make(chan string)
