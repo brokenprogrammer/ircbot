@@ -29,6 +29,8 @@ func InitDB() {
 	//Removing the tables from the database(Migrating down)
 	//migrationsDown(db)
 
+	//Seeding database with dummy data
+	databaseSeed(db)
 	/*
 		//Prepare statement
 		stmt, err := db.Prepare("INSERT INTO tbl1(one, two) values(?,?)")
@@ -149,5 +151,64 @@ func migrationsDown(db *sql.DB) {
 
 //Function to add some "Dummy" data to the database
 func databaseSeed(db *sql.DB) {
+	/*
+		Tx is a in progress database transaction, it is what db.Beigin returns.
+		A transaction must end with tx.Commit() after that all operations will ressult in
+		an error (ErrTxDone) meaning the transaction is already finished.
 
+		Starts a new transaction to the database
+	*/
+	tx, err := db.Begin()
+
+	//Prepare statement for the users table
+	users, err := tx.Prepare("INSERT INTO users(name) VALUES(?)")
+
+	//Error preparing statement, log the errors
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Close the statement when this functions is done
+	defer users.Close()
+
+	//Seeding the users table with users
+	_, err = users.Exec("John")
+	_, err = users.Exec("BadBob")
+	_, err = users.Exec("GoBotOwner")
+
+	//Prepare statement for the blocked table
+	blocked, err := tx.Prepare("INSERT INTO blocked(userid) VALUES(?)")
+
+	//Error preparing statement, log the errors
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Close the statement when this function is done
+	defer blocked.Close()
+
+	//Add user id 2 to the blocked list
+	_, err = blocked.Exec(2)
+
+	//Prepare statement for the messages table
+	messages, err := tx.Prepare("INSERT INTO messages(userid, message) VALUES(?, ?)")
+
+	//Error preparing statement, log the errors
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Close the statement when this function is done
+	defer messages.Close()
+
+	//Seeding the messages table with messages
+	_, err = messages.Exec(1, "Hello World")
+	_, err = messages.Exec(2, "Bad Message")
+	_, err = messages.Exec(3, "I the owner of this bot")
+
+	//Commit the transaction to the database
+	tx.Commit()
+
+	//Log success message to show that seeding is finished
+	log.Print("Database Seeded Successfully.")
 }
