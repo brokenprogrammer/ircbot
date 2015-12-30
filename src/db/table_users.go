@@ -72,7 +72,9 @@ func GetUserByID() {
 }
 
 //Function that gets the user in the database by just its name
-func GetUserByName(username string, c *Crud) {
+func GetUserByName(username string, c *Crud) int {
+	var userid int
+
 	//Get all the rows from the users table where the name is same as provided username
 	rows, err := c.DBInstance.Query("SELECT * FROM users WHERE name='" + username + "'")
 
@@ -80,6 +82,7 @@ func GetUserByName(username string, c *Crud) {
 	if err != nil {
 		//User doesnt exist
 		log.Print(err)
+		return 0
 	}
 
 	//Defer close the Query
@@ -92,10 +95,14 @@ func GetUserByName(username string, c *Crud) {
 		//Scan the id and name from the found row
 		rows.Scan(&id, &name)
 		log.Print("User: ", id, name)
+
+		//Set the user id to the found user
+		userid = id
 	}
 
 	//Log successmessage and return no errors
 	log.Printf("Successfully Found User: %s \n", username)
+	return userid
 }
 
 func GetUserMessages() {

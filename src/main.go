@@ -73,7 +73,11 @@ func main() {
 				//Check if the user is stored in our Database
 				db.CheckUser(formatter.GetUsername(splitted[0]), DBConn)
 
-				db.GetUserByName(formatter.GetUsername(splitted[0]), DBConn)
+				//Get the id of the user who typed the message
+				userid := db.GetUserByName(formatter.GetUsername(splitted[0]), DBConn)
+
+				//Store the message in the database
+				db.StoreMessage(userid, formatter.ExtractMessage(str), DBConn)
 
 				//Send the whole string to the channel
 				c <- str

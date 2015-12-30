@@ -85,6 +85,48 @@ func (c *Crud) Insert(table string, values ...string) error {
 	return nil
 }
 
+func (c *Crud) insertMessage(table string, userid int, message string) error {
+	//Initiate new transaction.
+	tx, err := c.DBInstance.Begin()
+
+	//Error logging for starting transaction.
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	//Building the insert string depending on how many values in the parameters
+	var irtString string
+	irtString = "INSERT INTO " + table + "VALUES(" + "?, ?" + ")"
+
+	//Initialize insert statement.
+	insert, err := tx.Prepare(irtString)
+
+	//Error logging for the statement initialization.
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	//Defer closing for the statement.
+	defer insert.Close()
+
+	//Execute the statement pushing values to database
+	_, err = insert.Exec(userid, message)
+
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	//Commit executed statements to the database
+	tx.Commit()
+
+	//Log successmessage and return no errors
+	log.Printf("Successfully Inserted Into Database: %v\n", message)
+	return nil
+}
+
 //Update function for updating data into specified table.
 //Takes in a table string, column to update, what to update it to and id of the target.
 //Example call to this function Update("users", "name", "NewName", 4)
