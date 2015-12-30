@@ -5,6 +5,7 @@ import (
 	"controlpanel"
 	"db"
 	"fmt"
+	"formatter"
 	_ "net"
 	"strings"
 	"watcher"
@@ -66,19 +67,13 @@ func main() {
 
 			//Sending the string through channel to our controlpanel
 			if splitted[1] == "PRIVMSG" {
-				//Get the first part of the string which contains the username
-				firstPart := splitted[0]
-
-				//Declare variable to hold the username
-				var username string
-				//All usernames is between : and ! so get the index of the ! mark
-				usernameEnd := strings.Index(firstPart, "!")
-
-				//Get the username by getting the string between the colon and ! mark
-				username = firstPart[1:usernameEnd]
+				//TODO: Add functions in db_crud to handle each and every table function. Make them private for the db package
+				//TODO: Make use of the structs in all the table files. (Look at other API repos)
 
 				//Check if the user is stored in our Database
-				db.CheckUser(username, DBConn)
+				db.CheckUser(formatter.GetUsername(splitted[0]), DBConn)
+
+				db.GetUserByName(formatter.GetUsername(splitted[0]), DBConn)
 
 				//Send the whole string to the channel
 				c <- str

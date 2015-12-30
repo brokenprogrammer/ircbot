@@ -11,6 +11,7 @@ package db
 
 import (
 	"database/sql"
+	"formatter"
 	"log"
 )
 
@@ -54,7 +55,7 @@ func (c *Crud) Insert(table string, values ...string) error {
 
 	//Building the insert string depending on how many values in the parameters
 	var irtString string
-	irtString = "INSERT INTO " + table + "VALUES(" + stringBuilder(len(values)) + ")"
+	irtString = "INSERT INTO " + table + "VALUES(" + formatter.StringBuilder(len(values)) + ")"
 
 	//Initialize insert statement.
 	insert, err := tx.Prepare(irtString)
@@ -191,17 +192,4 @@ func (c *Crud) Select(table string) error {
 	//Log successmessage and return no errors
 	log.Printf("Successfully Selected From Database: %s \n", table)
 	return nil
-}
-
-//Function used to build a string depending on a length of values for the database queries
-func stringBuilder(length int) string {
-	var str string
-	str = "?"
-
-	for i := 1; i < length; i++ {
-		str += ", ?"
-	}
-
-	//returning a string like "?, ?, ?" depending on how many values needed in the prepared statement
-	return str
 }
