@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"config"
 	"controlpanel"
 	"db"
 	"fmt"
@@ -67,7 +68,6 @@ func main() {
 
 			//Sending the string through channel to our controlpanel
 			if splitted[1] == "PRIVMSG" {
-				//TODO: Add functions in db_crud to handle each and every table function. Make them private for the db package
 				//TODO: Make use of the structs in all the table files. (Look at other API repos)
 
 				//Check if the user is stored in our Database

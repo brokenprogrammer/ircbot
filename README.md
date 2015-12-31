@@ -11,8 +11,8 @@ Coming soon..
 
 ###Third Party Packages
 Sqlite3 for go
+
 	go get github.com/mattn/go-sqlite3
-	
 	go install github.com/mattn/go-sqlite3
 
 ##Running ircbot
