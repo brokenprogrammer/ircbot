@@ -72,7 +72,7 @@ func GetUserByID() {
 
 }
 
-//Fu	nction that gets the user in the database by just its name
+//Function that gets the user in the database by just its name
 func GetUserByName(username string, c *Crud) int {
 	var userid int
 
@@ -164,4 +164,35 @@ func IsUserBlocked(username string, c *Crud) bool {
 
 func IsUserAdmin() {
 
+}
+
+//Function to count the ammount of entries in the users table
+func GetAmmountOfUsers(c *Crud) int {
+	//Get all the rows from the users table. Not the most efficient SQL query but will do for this app.
+	rows, err := c.DBInstance.Query("SELECT COUNT(*) FROM users")
+
+	//If there is an error we close down the function
+	if err != nil {
+		//User doesnt exist
+		log.Print(err)
+		return 0
+	}
+
+	//Defer close the Query
+	defer rows.Close()
+
+	//Loop through the one row and print it out to the console.
+	for rows.Next() {
+		var result int
+
+		//Scan the id and name from the found row
+		rows.Scan(&result)
+		log.Print("Result: ", result)
+
+		//Log successmessage and return no errors
+		log.Printf("Successfully Found Users: %s", result)
+		return result
+	}
+
+	return 0
 }

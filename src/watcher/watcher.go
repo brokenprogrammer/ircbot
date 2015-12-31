@@ -3,24 +3,27 @@ package watcher
 import (
 	"log"
 	"net"
+	"time"
 )
 
 type Watcher struct {
-	Server  string   //Server adress
-	Port    string   //Server Port
-	Nick    string   //Watchers Nickname
-	Channel string   //Channel to join
-	Conn    net.Conn //Connection
+	Server  string    //Server adress
+	Port    string    //Server Port
+	Nick    string    //Watchers Nickname
+	Channel string    //Channel to join
+	Conn    net.Conn  //Connection
+	RanFor  time.Time //Time the bot has be run for
 }
 
 //A factory function for our Watcher structure
 func NewBot(server, port, nick, channel string) *Watcher {
 	return &Watcher{
-		Server:  server,  //Server our IRC uses
-		Port:    port,    //Port for IRC
-		Nick:    nick,    //Name of our bot
-		Channel: channel, //Channel bot is connecting to
-		Conn:    nil,     //The conn will get initialized from the Connect function
+		Server:  server,     //Server our IRC uses
+		Port:    port,       //Port for IRC
+		Nick:    nick,       //Name of our bot
+		Channel: channel,    //Channel bot is connecting to
+		Conn:    nil,        //The conn will get initialized from the Connect function
+		RanFor:  time.Now(), //The current time.
 	}
 }
 

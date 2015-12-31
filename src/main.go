@@ -24,7 +24,7 @@ func main() {
 
 	DBConn.Insert(db.GetUsersTable(), "Larry")
 	DBConn.Update("users", "name", "NewLarry", 4)
-	DBConn.Delete("users", 4)
+	//DBConn.Delete("users", 4)
 	DBConn.Select("users")
 
 	db.CheckUser("BadBob", DBConn)
@@ -48,7 +48,7 @@ func main() {
 	conn.Write([]byte("PRIVMSG " + bot.Channel + " :Hello World!\r\n"))
 
 	//Using a Go Routine to handle a Control Panel for the bot simultaniously as the bot is running
-	go controlpanel.ControlPanel(conn, bot, c)
+	go controlpanel.ControlPanel(conn, bot, c, DBConn)
 
 	//Using another Go Routine to handle a Control Panel that listens to input from the terminal
 	go controlpanel.ControlPanelConsole(conn, bot, DBConn)
