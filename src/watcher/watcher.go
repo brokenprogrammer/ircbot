@@ -14,13 +14,13 @@ type Watcher struct {
 }
 
 //A factory function for our Watcher structure
-func NewBot() *Watcher {
+func NewBot(server, port, nick, channel string) *Watcher {
 	return &Watcher{
-		Server:  "irc.freenode.net", //Server our IRC uses
-		Port:    "6667",             //Port for IRC
-		Nick:    "BrokenBot",        //Name of our bot
-		Channel: "#gobotter",        //Channel bot is connecting to
-		Conn:    nil,                //The conn will get initialized from the Connect function
+		Server:  server,  //Server our IRC uses
+		Port:    port,    //Port for IRC
+		Nick:    nick,    //Name of our bot
+		Channel: channel, //Channel bot is connecting to
+		Conn:    nil,     //The conn will get initialized from the Connect function
 	}
 }
 

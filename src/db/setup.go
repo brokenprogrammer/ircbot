@@ -8,12 +8,12 @@ import (
 	"os"
 )
 
-func InitDB() {
+func InitDB(dbdriver string, dbpath string) {
 	//Cleaning out the db before startup
-	os.Remove("./db/ircbot.db")
+	os.Remove(dbpath)
 
 	//Opening a new sql connection to our ircbot.db file using Sqlite
-	db, err := sql.Open("sqlite3", "./db/ircbot.db")
+	db, err := sql.Open(dbdriver, dbpath)
 
 	//Error opening DB
 	if err != nil {

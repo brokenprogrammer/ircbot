@@ -13,11 +13,15 @@ import (
 )
 
 func main() {
+	//Initialize the configurations structure
+	config.InitCfg()
+
 	//Initialize the database, migrating tables.
-	db.InitDB()
+	db.InitDB(config.MainCFG.DBDriver, config.MainCFG.DBPath)
 
 	//Create a new DBConnection.
-	DBConn := db.NewCrud("sqlite3", "./db/ircbot.db")
+	DBConn := db.NewCrud(config.MainCFG.DBDriver, config.MainCFG.DBPath)
+
 	DBConn.Insert(db.GetUsersTable(), "Larry")
 	DBConn.Update("users", "name", "NewLarry", 4)
 	DBConn.Delete("users", 4)
@@ -29,7 +33,7 @@ func main() {
 	c := make(chan string)
 
 	//Our Bot Instance
-	bot := watcher.NewBot()
+	bot := watcher.NewBot(config.MainCFG.Server, config.MainCFG.Port, config.MainCFG.Nick, config.MainCFG.Channel)
 
 	//Connection instance copy
 	conn, _ := bot.Connect()

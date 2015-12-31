@@ -13,7 +13,6 @@ type Config struct {
 var MainCFG Config
 
 //Function to initialize the configurations. Must be a better way to do this?
-//TODO: Return a pointer to the MainCFG ?
 func InitCfg() {
 	MainCFG = Config{
 		Server:   "irc.freenode.net", //Server our IRC uses
