@@ -51,7 +51,7 @@ func main() {
 	go controlpanel.ControlPanel(conn, bot, c)
 
 	//Using another Go Routine to handle a Control Panel that listens to input from the terminal
-	go controlpanel.ControlPanelConsole(conn, bot)
+	go controlpanel.ControlPanelConsole(conn, bot, DBConn)
 
 	//The bufio reader will read data we get from our connection and return it as a string.
 	connBuff := bufio.NewReader(conn)
@@ -83,8 +83,10 @@ func main() {
 				//Store the message in the database
 				db.StoreMessage(userid, formatter.ExtractMessage(str), DBConn)
 
-				//Send the whole string to the channel
-				c <- str
+				//Send the whole string to the channel if the user isn't blocked
+				if !db.IsUserBlocked(formatter.GetUsername(splitted[0]), DBConn) {
+					c <- str
+				}
 			}
 		}
 		if err != nil {

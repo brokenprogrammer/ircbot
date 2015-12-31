@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"strconv"
 )
 
 type User struct {
@@ -71,7 +72,7 @@ func GetUserByID() {
 
 }
 
-//Function that gets the user in the database by just its name
+//Fu	nction that gets the user in the database by just its name
 func GetUserByName(username string, c *Crud) int {
 	var userid int
 
@@ -98,19 +99,67 @@ func GetUserByName(username string, c *Crud) int {
 
 		//Set the user id to the found user
 		userid = id
+
+		//Log successmessage and return no errors
+		log.Printf("Successfully Found User: %s \n", username)
+		return userid
 	}
 
 	//Log successmessage and return no errors
-	log.Printf("Successfully Found User: %s \n", username)
-	return userid
+	log.Printf("Couldn't Find User: %s \n", username)
+	return 0
 }
 
 func GetUserMessages() {
 
 }
 
-func IsUserBlocked() {
+//Checks if the user is blocked from using the bot returns true if the user is blocked.
+func IsUserBlocked(username string, c *Crud) bool {
+	//Get the user id by checking the username.
 
+	uid := GetUserByName(username, c)
+
+	//If the userid is 0 (Doesn't exist).
+	if uid == 0 {
+		//Act as blocked and return true.
+		log.Print("UserID was not found, Acting as blocked.")
+		return true
+	}
+
+	//Get the row from the blocked database where userid is the same as we got from GetUserByName.
+	rows, err := c.DBInstance.Query("SELECT * FROM blocked WHERE userid='" + strconv.Itoa(uid) + "'")
+
+	//If an error ocurr, Print it out and return true.
+	if err != nil {
+		//Printing error and acting as blocked by returning true.
+		log.Print(err)
+		return true
+	}
+
+	//Close the rows when we are finished
+	defer rows.Close()
+
+	//Look at the rows we found in the database
+	for rows.Next() {
+		var id int     //The id of the found row
+		var userid int //The user id bound to the found row
+
+		//Scan the id and userid from the row
+		rows.Scan(&id, &userid)
+		log.Print("ID & Userid: ", id, userid) //Print the found values out to the log
+
+		//Checking if the found id is same as the id for the specified user
+		if uid == userid {
+			//If true the user is actually blocked and we return true
+			log.Print("User is blocked")
+			return true
+		}
+	}
+
+	//If the code reaches this then there was no blocked user found in the database
+	log.Print("The user is not blocked ", username)
+	return false
 }
 
 func IsUserAdmin() {
