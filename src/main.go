@@ -22,10 +22,10 @@ func main() {
 	//Create a new DBConnection.
 	DBConn := db.NewCrud(config.MainCFG.DBDriver, config.MainCFG.DBPath)
 
-	DBConn.Insert(db.GetUsersTable(), "Larry")
-	DBConn.Update("users", "name", "NewLarry", 4)
+	//DBConn.Insert(db.GetUsersTable(), "Larry")
+	//DBConn.Update("users", "name", "NewLarry", 4)
 	//DBConn.Delete("users", 4)
-	DBConn.Select("users")
+	//DBConn.Select("users")
 
 	db.CheckUser("BadBob", DBConn)
 

@@ -24,11 +24,27 @@ func BlockUser(user string, c *Crud) {
 	log.Print("Successfully blocked user: ", user)
 }
 
-func UnBlockUser() {
+//Function to unblock user letting them use the commands again
+func UnBlockUser(user string, c *Crud) {
+	//Get the userid of the specified user by checking GetUserByName
+	userid := GetUserByName(user, c)
 
+	//If the user id is 0 then it doesnt exist
+	if userid != 0 {
+		//If everything goes as planned we delete the record of the user here.
+		c.Delete(GetBlockedTableRaw(), userid)
+	}
+
+	//Print out an success message
+	log.Print("Successfully unblocked user: ", user)
 }
 
 //Returns the string used for database queries connected with this table
 func GetBlockedTable() string {
 	return "blocked(userid)"
+}
+
+//Returns raw version of the blocked table
+func GetBlockedTableRaw() string {
+	return "blocked"
 }

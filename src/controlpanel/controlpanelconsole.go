@@ -37,22 +37,42 @@ func ControlPanelConsole(conn net.Conn, bot *watcher.Watcher, DBConn *db.Crud) {
 			conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + helloCommand()))
 		case "Block": //Block user from using the bot
 			conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + blockCommand(splitted[1], DBConn)))
+		case "UnBlock":
+			conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + unblockCommand(splitted[1], DBConn)))
 		case "Quit": //Quit
 			conn.Write([]byte("QUIT " + "\r\n"))
 		}
 	}
 }
 
+//Function that handles the hello command, prints a greetings message
 func helloCommand() string {
 	return "Hello, I'm At The ControlPanel!\r\n"
 }
 
+//Function that handles the block command, blocks given user from using the bot
 func blockCommand(user string, c *db.Crud) string {
-	//TODO: Code that adds user to database, Code in controlpanel.go that checks if user is blocked
+
+	//Check if the user is blocked already
 	if db.IsUserBlocked(user, c) {
 		return user + " is already blocked from using the bot or he/she doesn't exist!\r\n"
 	}
 
+	//if the user is not blocked then proceed with blocking the user
 	db.BlockUser(user, c)
 	return "Blocking " + user + " from using the bot!\r\n"
+}
+
+//Function that handles the unblock command, unblock given user so he/she can use the bot again
+func unblockCommand(user string, c *db.Crud) string {
+
+	//If the user is blocked proceed with unblocking
+	if db.IsUserBlocked(user, c) {
+		//Unblock user removing it form the block list
+		db.UnBlockUser(user, c)
+		return "UnBlocking " + user + " from the block list!\r\n"
+	}
+
+	//The user is not blocked and cannot be unblocked
+	return user + " is not blocked from using the bot or he/she doesn't exist!\r\n"
 }

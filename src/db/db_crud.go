@@ -181,14 +181,19 @@ func (c *Crud) Delete(table string, id int) error {
 	}
 
 	var delString string
-	delString = `DELETE FROM ` + table + ` WHERE id= ?`
+	if table == GetUsersTable() {
+		delString = `DELETE FROM ` + table + ` WHERE id=?`
+	} else {
+		delString = `DELETE FROM ` + table + ` WHERE userid=?`
+		log.Print("Table is using userid")
+	}
 
 	//Initialize delete statement.
 	delete, err := tx.Prepare(delString)
 
 	//Error logging for the statement initialization.
 	if err != nil {
-		log.Print(err)
+		log.Print("Error preparing: ", err)
 		return err
 	}
 
@@ -198,7 +203,7 @@ func (c *Crud) Delete(table string, id int) error {
 	_, err = delete.Exec(id)
 
 	if err != nil {
-		log.Print(err)
+		log.Print("Error executing: ", err)
 		return err
 	}
 

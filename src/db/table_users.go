@@ -59,13 +59,28 @@ func NewUser(username string, c *Crud) {
 	log.Printf("Successfully Inserted User To Database: %s \n", username)
 }
 
-func DeleteUser() {
+//Deletes an user from the database
+func DeleteUser(userid int, c *Crud) {
+	//Deletes user with the id userid
+	err := c.Delete(GetUsersTableRaw(), userid)
 
+	//If we find errors then print it out
+	if err != nil {
+		log.Print(err)
+	}
+
+	//Print success message
+	log.Print("Deleted user: ", userid)
 }
 
 //Returns the string used for database queries connected with this table
 func GetUsersTable() string {
 	return "users(name)"
+}
+
+//Returns raw version of the users table
+func GetUsersTableRaw() string {
+	return "users"
 }
 
 func GetUserByID() {
@@ -110,6 +125,7 @@ func GetUserByName(username string, c *Crud) int {
 	return 0
 }
 
+//Gets all the users messages printed out to a text file
 func GetUserMessages() {
 
 }

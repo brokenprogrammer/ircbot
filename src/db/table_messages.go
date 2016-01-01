@@ -32,6 +32,10 @@ func GetMessagesTable() string {
 	return "messages(userid, message)"
 }
 
+func GetMessagesTableRaw() string {
+	return "messages"
+}
+
 //Function to get ammount of messages stored in the db
 func GetAmmountOfMessages(c *Crud) int {
 	//Get all the rows from the messages table. This is not the most efficient way but will do for a small app.
