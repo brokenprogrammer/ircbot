@@ -68,19 +68,60 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 	newMess := formatter.ExtractMessage(message)
 	fs := token.NewFileSet()
 	tr, _ := parser.ParseExpr(newMess[6:])
+
+	var expression []string
+	var expressionString string
+
 	ast.Print(fs, tr)
+	//Gets the different values and what position they are at. Find a way to find the operators as well.
 	ast.Inspect(tr, func(n ast.Node) bool {
 		var s string
 		switch x := n.(type) {
 		case *ast.BasicLit:
 			s = x.Value
+			expression = append(expression, s)
 		case *ast.Ident:
 			s = x.Name
+			expression = append(expression, s)
+		case *ast.BinaryExpr:
+			s = x.Op.String()
+			expression = append(expression, s)
 		}
 		if s != "" {
-			fmt.Printf("%s:\t%s\n", n.Pos(), s)
+			fmt.Print("Pos: ", n.Pos(), " Value: ", s)
 		}
 		return true
 	})
-	conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:] + " \r\n"))
+
+	for _, v := range expression {
+		expressionString += v + " "
+	}
+
+	//TODO: CHECK IF THE VALUES ARE BOOLEANS / STRINGS FLOATS OR INTS
+	//TODO: MAKE IT SO MULTIPLE EXPRESSIONS ARE POSSIBLE
+
+	var astring string
+
+	if len(expression) >= 3 {
+		var1 := expression[1]
+		var2 := expression[2]
+		solved := expression[1] + expression[2]
+		switch expression[0] {
+		case "+":
+			solved = var1 + var2
+			astring = solved
+		}
+	} else {
+		solved := expression[0]
+		astring = solved
+	}
+	fmt.Println(astring)
+	theReal := testReturnNum(expression[1]) + testReturnNum(expression[2])
+
+	conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:len(newMess)-2] + ": " + strconv.Itoa(theReal) + " \r\n"))
+}
+
+func testReturnNum(s string) int {
+	a, _ := strconv.Atoi(s)
+	return a
 }
