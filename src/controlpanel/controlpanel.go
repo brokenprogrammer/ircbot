@@ -3,6 +3,10 @@ package controlpanel
 import (
 	"db"
 	"fmt"
+	"formatter"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"net"
 	"strconv"
 	"strings"
@@ -41,6 +45,8 @@ func readMessage(msg string, bot *watcher.Watcher, conn net.Conn, DBConn *db.Cru
 	case ":!status":
 		//Calling the function displaying the status message
 		statusCommand(bot, conn, DBConn)
+	case ":!eval":
+		evalCommand(bot, conn, msg)
 	default:
 		fmt.Println(msg)
 	}
@@ -56,4 +62,25 @@ func helpCommand(bot *watcher.Watcher, conn net.Conn) {
 //Requested to view the status of the application.
 func statusCommand(bot *watcher.Watcher, conn net.Conn, DBConn *db.Crud) {
 	conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + "BrokenBot Status: Uptime: " + time.Since(bot.RanFor).String() + " Tracking: " + strconv.Itoa(db.GetAmmountOfUsers(DBConn)) + " users and tracking: " + strconv.Itoa(db.GetAmmountOfMessages(DBConn)) + " messages. \r\n"))
+}
+
+func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
+	newMess := formatter.ExtractMessage(message)
+	fs := token.NewFileSet()
+	tr, _ := parser.ParseExpr(newMess[6:])
+	ast.Print(fs, tr)
+	ast.Inspect(tr, func(n ast.Node) bool {
+		var s string
+		switch x := n.(type) {
+		case *ast.BasicLit:
+			s = x.Value
+		case *ast.Ident:
+			s = x.Name
+		}
+		if s != "" {
+			fmt.Printf("%s:\t%s\n", n.Pos(), s)
+		}
+		return true
+	})
+	conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:] + " \r\n"))
 }
