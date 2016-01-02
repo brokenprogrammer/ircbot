@@ -170,7 +170,7 @@ func (c *Crud) Update(table string, column string, newVal string, id int) error 
 	return nil
 }
 
-func (c *Crud) Delete(table string, id int) error {
+func (c *Crud) Delete(table string, where string, id int) error {
 	//Initiate new transaction.
 	tx, err := c.DBInstance.Begin()
 
@@ -181,12 +181,13 @@ func (c *Crud) Delete(table string, id int) error {
 	}
 
 	var delString string
-	if table == GetUsersTable() {
-		delString = `DELETE FROM ` + table + ` WHERE id=?`
+	delString = `DELETE FROM ` + table + ` WHERE ` + where + `=?`
+	/*if table == GetUsersTable() {
+		delString = `DELETE FROM ` + table + ` WHERE ` + where + `=?`
 	} else {
 		delString = `DELETE FROM ` + table + ` WHERE userid=?`
 		log.Print("Table is using userid")
-	}
+	}*/
 
 	//Initialize delete statement.
 	delete, err := tx.Prepare(delString)
@@ -215,9 +216,19 @@ func (c *Crud) Delete(table string, id int) error {
 	return nil
 }
 
-func (c *Crud) Select(table string) error {
+//TODO: Create a DB wrapper
+//TODO: https://github.com/joshcam/PHP-MySQLi-Database-Class
+func (c *Crud) Select(table string, by string, target string) error {
+	var query string
+
 	//Execute a query that returns rows
-	rows, err := c.DBInstance.Query(`SELECT id, name FROM ` + table)
+	if len(target) < 2 {
+		query = `SELECT ` + by + ` FROM ` + table + ` WHERE ` + target[0] + `='` + target[1] + `'`
+	} else {
+		query = `SELECT ` + by + ` FROM ` + table
+	}
+
+	rows, err := c.DBInstance.Query(query)
 
 	//Error executing query, log error and return
 	if err != nil {

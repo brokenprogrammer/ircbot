@@ -25,7 +25,6 @@ func main() {
 	//DBConn.Insert(db.GetUsersTable(), "Larry")
 	//DBConn.Update("users", "name", "NewLarry", 4)
 	//DBConn.Delete("users", 4)
-	//DBConn.Select("users")
 
 	db.CheckUser("BadBob", DBConn)
 

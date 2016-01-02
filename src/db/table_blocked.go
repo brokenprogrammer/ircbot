@@ -32,7 +32,7 @@ func UnBlockUser(user string, c *Crud) {
 	//If the user id is 0 then it doesnt exist
 	if userid != 0 {
 		//If everything goes as planned we delete the record of the user here.
-		c.Delete(GetBlockedTableRaw(), userid)
+		c.Delete(GetBlockedTableRaw(), "userid", userid)
 	}
 
 	//Print out an success message

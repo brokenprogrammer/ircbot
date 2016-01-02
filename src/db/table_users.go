@@ -61,8 +61,8 @@ func NewUser(username string, c *Crud) {
 
 //Deletes an user from the database
 func DeleteUser(userid int, c *Crud) {
-	//Deletes user with the id userid
-	err := c.Delete(GetUsersTableRaw(), userid)
+	//Deletes user with the id userid and find the entry by the id
+	err := c.Delete(GetUsersTableRaw(), "id", userid)
 
 	//If we find errors then print it out
 	if err != nil {
