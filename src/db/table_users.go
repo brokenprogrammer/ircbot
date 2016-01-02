@@ -83,8 +83,42 @@ func GetUsersTableRaw() string {
 	return "users"
 }
 
-func GetUserByID() {
+//Returns the username which has the specified ID
+func GetUserByID(userid int, c *Crud) string {
+	//Variable to hold the username
+	var username string
 
+	//Building the query
+	rows, err := c.DBInstance.Query("SELECT * FROM users WHERE id='" + strconv.Itoa(userid) + "'")
+
+	//If errors ocurr we return out of the function
+	if err != nil {
+		log.Print(err)
+		return ""
+	}
+
+	//Close the rows when we are done
+	defer rows.Close()
+
+	//Loop through the one row and print it out to the console.
+	for rows.Next() {
+		var id int
+		var name string
+		//Scan the id and name from the found row
+		rows.Scan(&id, &name)
+		log.Print("User: ", id, name)
+
+		//Set the username to the found user
+		username = name
+
+		//Log successmessage and return no errors
+		log.Printf("Successfully Found User: %s \n", username)
+		return username
+	}
+
+	//Log successmessage and return no errors
+	log.Printf("Couldn't Find User: %s \n", username)
+	return ""
 }
 
 //Function that gets the user in the database by just its name

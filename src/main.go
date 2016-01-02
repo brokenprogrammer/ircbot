@@ -26,6 +26,9 @@ func main() {
 	//DBConn.Update("users", "name", "NewLarry", 4)
 	//DBConn.Delete("users", 4)
 	db.CheckUser("BadBob", DBConn)
+	db.GetUserByID(1, DBConn)
+	db.GetUserByID(2, DBConn)
+	db.GetUserByID(3, DBConn)
 
 	//Channel to send Chat input to the different Go Routines
 	c := make(chan string)

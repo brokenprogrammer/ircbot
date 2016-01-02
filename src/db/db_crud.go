@@ -250,7 +250,7 @@ func (c *Crud) Select(table string) (map[int]string, error) {
 	return results, nil
 }
 
-func SelectSpecific(table string, column string, value string) (int, string) {
+func (c *Crud) SelectSpecific(table string, column string, value string) (int, string) {
 	var query string
 
 	query = `SELECT * FROM ` + table + ` WHERE ` + column + `='` + value + `'`
@@ -258,7 +258,7 @@ func SelectSpecific(table string, column string, value string) (int, string) {
 	rows, err := c.DBInstance.Query(query)
 
 	if err != nil {
-		log.Printf(err)
+		log.Print(err)
 		return 0, ""
 	}
 
