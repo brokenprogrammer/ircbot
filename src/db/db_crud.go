@@ -218,22 +218,19 @@ func (c *Crud) Delete(table string, where string, id int) error {
 
 //TODO: Create a DB wrapper
 //TODO: https://github.com/joshcam/PHP-MySQLi-Database-Class
-func (c *Crud) Select(table string, by string, target string) error {
+func (c *Crud) Select(table string) (map[int]string, error) {
+	results := make(map[int]string)
 	var query string
 
 	//Execute a query that returns rows
-	if len(target) < 2 {
-		query = `SELECT ` + by + ` FROM ` + table + ` WHERE ` + target[0] + `='` + target[1] + `'`
-	} else {
-		query = `SELECT ` + by + ` FROM ` + table
-	}
+	query = `SELECT ` + `*` + ` FROM ` + table
 
 	rows, err := c.DBInstance.Query(query)
 
 	//Error executing query, log error and return
 	if err != nil {
 		log.Print(err)
-		return err
+		return results, err
 	}
 
 	//Close the rows when function is finished
@@ -245,9 +242,36 @@ func (c *Crud) Select(table string, by string, target string) error {
 		var name string
 		rows.Scan(&id, &name)
 		log.Print(id, name)
+		results[id] = name
 	}
 
 	//Log successmessage and return no errors
 	log.Printf("Successfully Selected From Database: %s \n", table)
-	return nil
+	return results, nil
+}
+
+func SelectSpecific(table string, column string, value string) (int, string) {
+	var query string
+
+	query = `SELECT * FROM ` + table + ` WHERE ` + column + `='` + value + `'`
+
+	rows, err := c.DBInstance.Query(query)
+
+	if err != nil {
+		log.Printf(err)
+		return 0, ""
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var name string
+		rows.Scan(&id, &name)
+		log.Print(id, name)
+		return id, name
+	}
+
+	log.Print("End of func")
+	return 0, ""
 }

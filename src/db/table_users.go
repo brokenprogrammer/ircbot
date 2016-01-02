@@ -212,3 +212,12 @@ func GetAmmountOfUsers(c *Crud) int {
 
 	return 0
 }
+
+//Prints out all the users in the user table
+func GetAllUsers(c *Crud) {
+	allUsers, _ := c.Select(GetUsersTableRaw())
+
+	for i, v := range allUsers {
+		log.Print("User: ", i, " Is: ", v)
+	}
+}
