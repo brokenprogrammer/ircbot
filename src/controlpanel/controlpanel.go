@@ -70,8 +70,9 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 	tr, _ := parser.ParseExpr(newMess[6:])
 
 	var expression []string
-	var expressionString string
-
+	//var expressionString string
+	var Evalvalues []interface{}
+	var operands []interface{}
 	ast.Print(fs, tr)
 	//Gets the different values and what position they are at. Find a way to find the operators as well.
 	ast.Inspect(tr, func(n ast.Node) bool {
@@ -80,12 +81,15 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 		case *ast.BasicLit:
 			s = x.Value
 			expression = append(expression, s)
+			Evalvalues = append(Evalvalues, s)
 		case *ast.Ident:
 			s = x.Name
 			expression = append(expression, s)
+			Evalvalues = append(Evalvalues, s)
 		case *ast.BinaryExpr:
 			s = x.Op.String()
 			expression = append(expression, s)
+			operands = append(operands, s)
 		}
 		if s != "" {
 			fmt.Print("Pos: ", n.Pos(), " Value: ", s)
@@ -93,35 +97,68 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 		return true
 	})
 
-	for _, v := range expression {
-		expressionString += v + " "
-	}
+	useFloat, useString := checkType(Evalvalues)
+	var floatSum float64
+	var stringSum string
 
-	//TODO: CHECK IF THE VALUES ARE BOOLEANS / STRINGS FLOATS OR INTS
-	//TODO: MAKE IT SO MULTIPLE EXPRESSIONS ARE POSSIBLE
+	fmt.Println("useFloat: ", useFloat, " useString: ", useString)
 
-	var astring string
-
-	if len(expression) >= 3 {
-		var1 := expression[1]
-		var2 := expression[2]
-		solved := expression[1] + expression[2]
-		switch expression[0] {
-		case "+":
-			solved = var1 + var2
-			astring = solved
+	if useString == true {
+		for i, _ := range Evalvalues {
+			if i != 0 {
+				operator := operands[i-1]
+				switch operator {
+				case "+":
+					stringSum += Evalvalues[i].(string)
+				}
+			} else {
+				stringSum += Evalvalues[i].(string)
+			}
 		}
-	} else {
-		solved := expression[0]
-		astring = solved
+	} else if useFloat == true {
+		for i, _ := range Evalvalues {
+			if i != 0 {
+				operator := operands[i-1]
+				switch operator {
+				case "+":
+					tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
+					floatSum += tempFloat
+				}
+			} else {
+				tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
+				floatSum += tempFloat
+			}
+		}
 	}
-	fmt.Println(astring)
-	theReal := testReturnNum(expression[1]) + testReturnNum(expression[2])
 
-	conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:len(newMess)-2] + ": " + strconv.Itoa(theReal) + " \r\n"))
+	if useString == true {
+		conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:len(newMess)-2] + ": " + stringSum + " \r\n"))
+	} else if useFloat == true {
+		conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + newMess[6:len(newMess)-2] + ": " + strconv.FormatFloat(floatSum, 'f', -1, 64) + " \r\n"))
+	}
 }
 
 func testReturnNum(s string) int {
 	a, _ := strconv.Atoi(s)
 	return a
+}
+
+func checkType(i []interface{}) (bool, bool) {
+	useFloat := false
+	useString := false
+
+	for _, val := range i {
+		newVal, err := strconv.ParseFloat(val.(string), 64)
+
+		if err != nil {
+			useFloat = false
+			useString = true
+		} else {
+			useFloat = true
+		}
+
+		fmt.Println(newVal, " :NewVal")
+	}
+
+	return useFloat, useString
 }
