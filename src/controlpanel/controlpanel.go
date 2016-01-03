@@ -84,22 +84,29 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 	ast.Print(fs, tr)
 	//Gets the different values and what position they are at. Find a way to find the operators as well.
 	ast.Inspect(tr, func(n ast.Node) bool {
+		//String variable that every found identifier and litteral will be put in.
 		var s string
+
+		//Type switch to determit what type the current node is
 		switch x := n.(type) {
 		case *ast.BasicLit:
-			s = x.Value
+			s = x.Value //Adding the value into our string s
 			expression = append(expression, s)
+			//Evalvalues used to store all the given values, Strings Integers etc.
 			Evalvalues = append(Evalvalues, s)
 		case *ast.Ident:
-			s = x.Name
+			s = x.Name //Adding the value into our string s
 			expression = append(expression, s)
+			//Evalvalues used to store all the given values, Strings Integers etc.
 			Evalvalues = append(Evalvalues, s)
 		case *ast.BinaryExpr:
-			s = x.Op.String()
+			s = x.Op.String() //Adding the operator by type assertion to our string
 			expression = append(expression, s)
+			//Storing all our operators in a separate interface slice.
 			operands = append(operands, s)
 		}
 		if s != "" {
+			//Printing out our created string
 			fmt.Print("Pos: ", n.Pos(), " Value: ", s)
 		}
 		return true
@@ -139,6 +146,12 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 				case "+":
 					tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
 					floatSum += tempFloat
+				case "-":
+					tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
+					floatSum -= tempFloat
+				case "*":
+					tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
+					floatSum *= tempFloat
 				}
 			} else { //If its the first loop then add the first value
 				tempFloat, _ := strconv.ParseFloat(Evalvalues[i].(string), 64)
@@ -155,6 +168,7 @@ func evalCommand(bot *watcher.Watcher, conn net.Conn, message string) {
 	}
 }
 
+//Test function to switch strings into integers
 func testReturnNum(s string) int {
 	a, _ := strconv.Atoi(s)
 	return a
@@ -162,16 +176,20 @@ func testReturnNum(s string) int {
 
 //Check which types are included, returns 2 booleans, one for string and one for float
 func checkType(i []interface{}) (bool, bool) {
+	//Creating our two return values, either float or string
 	useFloat := false
 	useString := false
 
+	//Ranging through the interface slice
 	for _, val := range i {
+		//Attempting to parse the current value to a float
 		newVal, err := strconv.ParseFloat(val.(string), 64)
 
+		//If the parse to float fails we keep the value as a string and return useString as true
 		if err != nil {
 			useFloat = false
 			useString = true
-		} else {
+		} else { //Otherwise we will be using floats
 			useFloat = true
 		}
 
