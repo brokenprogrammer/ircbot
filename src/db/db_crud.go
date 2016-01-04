@@ -275,3 +275,15 @@ func (c *Crud) SelectSpecific(table string, column string, value string) (int, s
 	log.Print("End of func")
 	return 0, ""
 }
+
+func findByID() {
+
+}
+
+func findByName() {
+
+}
+
+func findAll() {
+
+}
