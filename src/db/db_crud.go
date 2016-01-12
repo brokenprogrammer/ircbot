@@ -276,6 +276,35 @@ func (c *Crud) SelectSpecific(table string, column string, value string) (int, s
 	return 0, ""
 }
 
+func (c *Crud) getMessages(table string, user string) string {
+    var query string
+    var messages string
+
+    query = `SELECT * FROM ` + table + ` WHERE userid='` + user + `'`
+    log.Println(query)
+    rows, err := c.DBInstance.Query(query)
+
+	if err != nil {
+		log.Print(err)
+		return ""
+	}
+
+	defer rows.Close()
+    log.Println("Starting getting entries: ")
+	for rows.Next() {
+		var id int
+		var userid int
+        var message string
+        var time string
+		rows.Scan(&id, &userid, &message, &time)
+        messages += message + "\n"
+		log.Println(id, userid, message, time)
+	}
+    log.Println(messages)
+	log.Print("End of func")
+    return messages
+}
+
 func findByID() {
 
 }

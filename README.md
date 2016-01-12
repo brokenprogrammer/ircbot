@@ -42,6 +42,7 @@ Commands you can type into the terminal while the bot is running to make the bot
 	Hello - Makes the bot print a hello message into the irc chat.
 	Block Username - Replace Username with the user you wish to block, blocked users cannot use the chat commands.
 	UnBlock Username - Replace Username with the user you wish to unblock.
+    Extract Username - Extracts all messages stored for that user into a text file Example: user.txt.
 ```
 ###Chat Commands
 Commands users can type in the irc chat to make the bot do specific tasks:

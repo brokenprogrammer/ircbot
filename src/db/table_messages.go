@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+    "strconv"
 )
 
 type Message struct {
@@ -19,8 +20,10 @@ func StoreMessage(userid int, message string, c *Crud) {
 	log.Printf("Successfully Inserted Message To Database: %s \n", message)
 }
 
-func GetMessages() {
+func GetMessages(userid int, c *Crud) string {
+    messages := c.getMessages(GetMessagesTableRaw(), strconv.Itoa(userid))
 
+    return messages
 }
 
 func DeleteMessages() {

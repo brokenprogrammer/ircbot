@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"watcher"
+    "printer"
 )
 
 //Control Panel that will undestand our commands by watching input in the terminal
@@ -39,6 +40,8 @@ func ControlPanelConsole(conn net.Conn, bot *watcher.Watcher, DBConn *db.Crud) {
 			conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + blockCommand(splitted[1], DBConn)))
 		case "UnBlock":
 			conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + unblockCommand(splitted[1], DBConn)))
+        case "Extract":
+            conn.Write([]byte("PRIVMSG " + bot.Channel + " :" + extractCommand(splitted[1], DBConn)))
 		case "Quit": //Quit
 			conn.Write([]byte("QUIT " + "\r\n"))
 		}
@@ -75,4 +78,13 @@ func unblockCommand(user string, c *db.Crud) string {
 
 	//The user is not blocked and cannot be unblocked
 	return user + " is not blocked from using the bot or he/she doesn't exist!\r\n"
+}
+
+func extractCommand(user string, c *db.Crud) string {
+    userid := db.GetUserByName(user, c)
+    messages := db.GetMessages(userid, c)
+
+    printer.TextToFile(messages, user)
+
+    return user + " is going to get logged.\r\n"
 }
